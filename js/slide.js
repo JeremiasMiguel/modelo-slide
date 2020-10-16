@@ -25,18 +25,28 @@ export default class Slide {
   }
 
   onStart(event) {
-    event.preventDefault();
-    // Capta o eixo X do clique do mouse na hora
-    this.dist.startX = event.clientX;
-    this.wrapper.addEventListener("mousemove", this.onMove);
+    let moveType;
+
+    if(event.type === "mousedown") {
+      event.preventDefault();
+      // Capta o eixo X do clique do mouse na hora
+      this.dist.startX = event.clientX;
+      moveType = "mousemove";
+    } else {
+      this.dist.startX = event.changedTouches[0].clientX;
+      moveType = "touchmove";
+    }
+    this.wrapper.addEventListener(moveType, this.onMove);
   }
 
   onMove(event) {
-    const finalPosition = this.updatePosition(event.clientX);
+    const pointerPosition = (event.type === "mousemove") ? event.clientX : event.changedTouches[0].clientX;
+    const finalPosition = this.updatePosition(pointerPosition);
     this.moveSlide(finalPosition);
   }
 
   onEnd(event) {
+    const moveType = (event.type === "mouseup") ? "mousemove" : "touchmove";
     // Retira o evento de movimentação do mouse
     this.wrapper.removeEventListener("mousemove", this.onMove);
     // Ao finalizar o evento, salva a posição final do slide com o evento do mouse
@@ -46,8 +56,10 @@ export default class Slide {
   addSlideEvents() {
     // MouseDown -> Evento onde exatamente ocorre um click
     this.wrapper.addEventListener("mousedown", this.onStart);
+    this.wrapper.addEventListener("touchstart", this.onStart);
     // MouseUp -> Quando deixa de clicar o mouse, finalizando o evento
     this.wrapper.addEventListener("mouseup", this.onEnd);
+    this.wrapper.addEventListener("touchend", this.onEnd);
   }
 
   bindEvents() {
