@@ -68,9 +68,49 @@ export default class Slide {
     this.onEnd = this.onEnd.bind(this);
   }
 
+  // SLIDE CONFIG
+
+  slidePosition(slide) {
+    const margin = (this.wrapper.offsetWidth - slide.offsetWidth) / 2;
+    // Valor exato para deixar a imagem do elemento do slide no centro
+    return -(slide.offsetLeft - margin);
+  }
+
+  slidesConfig() {
+    this.slideArray = [...this.slide.children].map((element) => {
+      const position = this.slidePosition(element);
+      return {
+        position,
+        element
+      }
+    })
+  }
+
+  // Verifica os elementos vizinhos do index ativo
+  slidesIndexNav(index) {
+    // Verifica tamanho total
+    const last = this.slideArray.length - 1;
+
+    this.index = {
+      // Se o index for zero, o anterior é undefined
+      prev: index ? index - 1 : undefined,
+      active: index,
+      // Se o elemento for o último, não há um depis, sendo definido assim como undefined
+      next: index === last ? undefined : index + 1,
+    }
+  }
+
+  changeSlide(index) {
+    const activeSlide = this.slideArray[index]
+    this.moveSlide(activeSlide.position);
+    this.slidesIndexNav(index);
+    this.dist.finalPosition = activeSlide.position;
+  }
+
   init() {
     this.bindEvents();
     this.addSlideEvents();
+    this.slidesConfig();
     return this;
   }
 }
