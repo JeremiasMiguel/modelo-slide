@@ -9,6 +9,11 @@ export default class Slide {
     }
   }
 
+  // Otimiza transição no slide
+  transition(active) {
+    this.slide.style.transition = active ? "transform .3s" : "";
+  }
+
   // Adiciona o estilo CSS de movimentação, movendo o slide de acordo com o movimento
   // do mouse captado pelo dist.movement, com o método ONMOVE
   moveSlide(distX) {
@@ -37,6 +42,8 @@ export default class Slide {
       moveType = "touchmove";
     }
     this.wrapper.addEventListener(moveType, this.onMove);
+
+    this.transition(false);
   }
 
   onMove(event) {
@@ -51,6 +58,24 @@ export default class Slide {
     this.wrapper.removeEventListener("mousemove", this.onMove);
     // Ao finalizar o evento, salva a posição final do slide com o evento do mouse
     this.dist.finalPosition = this.dist.movePosition;
+    // Muda o slide quando finalizar a rolagem
+    this.changeSlideOnEnd();
+
+    this.transition(true);
+  }
+
+  changeSlideOnEnd() {
+    // Verifica o movimento do mouse, se é negativo, irá para o slide anterior, se for positivo,
+    // irá para o próximo
+    if(this.dist.movement > 120 && this.index.next !== undefined) {
+      this.activeNextSlide();
+    } else if(this.dist.movement < -120 && this.index.prev !== undefined) {
+      this.activePrevSlide();
+    }
+    // Se não for nenhum dos dois ativa o atual
+    else {
+      this.changeSlide(this.index.active);
+    }
   }
 
   addSlideEvents() {
@@ -107,8 +132,21 @@ export default class Slide {
     this.dist.finalPosition = activeSlide.position;
   }
 
+  activePrevSlide() {
+    if(this.index.prev !== undefined) {
+      this.changeSlide(this.index.prev);
+    }
+  }
+
+  activeNextSlide() {
+    if(this.index.next !== undefined) {
+      this.changeSlide(this.index.next);
+    }
+  }
+
   init() {
     this.bindEvents();
+    this.transition(true);
     this.addSlideEvents();
     this.slidesConfig();
     return this;
