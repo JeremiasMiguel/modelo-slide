@@ -10,6 +10,10 @@ export class Slide {
       movement: 0
     }
     this.activeClass = "active";
+
+    // Evento personalizado, para modificar a navegação e avisar a lista de index que as imagens
+    // foram alteradas
+    this.changeEvent = new Event("changeEvent");
   }
 
   // Otimiza transição no slide
@@ -129,6 +133,8 @@ export class Slide {
     this.dist.finalPosition = activeSlide.position;
 
     this.changeActiveClass();
+
+    this.wrapper.dispatchEvent(this.changeEvent);
   }
 
   // Adiciona a classe ativo na imagem atual
@@ -189,6 +195,11 @@ export class Slide {
 
 // Classe extendida que conterá a navegação de anterior e próximo
 export class SlideNav extends Slide {
+  constructor(slide, wrapper) {
+    super(slide, wrapper);
+    this.bindControlEvents();
+  }
+
   // Adiciona setas de anterior e próximo
   addArrow(prev, next) {
     this.prevElement = document.querySelector(prev);
@@ -200,5 +211,52 @@ export class SlideNav extends Slide {
   addArrowEvent() {
     this.prevElement.addEventListener("click", this.activePrevSlide);
     this.nextElement.addEventListener("click", this.activeNextSlide);
+  }
+
+  // Cria as bolinhas de navegação
+  createControl() {
+    const control = document.createElement("ul");
+    control.dataset.control = "slide";
+
+    this.slideArray.forEach((item, index) => {
+      control.innerHTML += `<li><a href="#slide${index + 1}">${index + 1}</a></li>`;
+    });
+
+    this.wrapper.appendChild(control);
+
+    return control;
+  }
+
+  eventControl(item, index) {
+    item.addEventListener("click", (evento) => {
+      evento.preventDefault();
+      this.changeSlide(index);
+    });
+    // Busca o evento que foi disparado no método changeSlide,
+    // toda vez que mudar o slide tal evento será ativado
+    this.wrapper.addEventListener("changeEvent", this.activeControlItem);
+  }
+
+  activeControlItem() {
+    this.controlArray.forEach((item) => {
+      item.classList.remove(this.activeClass);
+    })
+    this.controlArray[this.index.active].classList.add(this.activeClass);
+  }
+
+  addControl(customControl) {
+    this.control = document.querySelector(customControl) || this.createControl();
+    // Transformando o HTMLCollection em um ARRAY
+    this.controlArray = [...this.control.children];
+
+    // Deixa ativo o primeiro item
+    this.activeControlItem();
+
+    this.controlArray.forEach(this.eventControl);
+  }
+
+  bindControlEvents() {
+    this.eventControl = this.eventControl.bind(this);
+    this.activeControlItem = this.activeControlItem.bind(this);
   }
 }
