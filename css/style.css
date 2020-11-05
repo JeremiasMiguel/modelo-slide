@@ -70,3 +70,58 @@ img {
 [data-control="slide"] li a:hover {
   background: #e54;
 }
+
+/* CUSTOM CONTROLS */
+
+.custom-controls {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+  margin-bottom: 20px;
+  /* Quando estoura o container a linha quebra */
+  flex-wrap: wrap;
+}
+
+.custom-controls li {
+  opacity: 0.8;
+  transform: scale(0.8);
+  transition: 0.3s;
+
+  width: 40px;
+  height: 40px;
+  margin: 2px;
+
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.5);
+}
+
+.custom-controls li.active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* PREV e NEXT */
+.arrow-nav {
+  display: flex;
+  justify-content: space-around;
+  margin: 20px 0px;
+}
+
+.arrow-nav button {
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+
+  width: 40px;
+  height: 40px;
+
+  /* Muda o botão escrito Prev e Next para setas */
+  background: #fb5 url("../img/arrow.svg") center center no-repeat;
+  color: white;
+}
+
+/* Rotaciona a seta de próximo para ANTERIOR */
+.arrow-nav button.prev {
+  transform: rotate(-180deg);
+}
