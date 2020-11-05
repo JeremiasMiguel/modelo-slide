@@ -194,7 +194,7 @@ export class Slide {
 }
 
 // Classe extendida que conterá a navegação de anterior e próximo
-export class SlideNav extends Slide {
+export default class SlideNav extends Slide {
   constructor(slide, wrapper) {
     super(slide, wrapper);
     this.bindControlEvents();
